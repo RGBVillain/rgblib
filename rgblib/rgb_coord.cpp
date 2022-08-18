@@ -12,7 +12,7 @@ int rgb::rasterRectangle (const SRectangle & rectangle, std::function<int(const 
 int rgb::rasterCircle	(const SCircle & circle, std::function<int(const SCoord &)> funcSetPixel) {
 	const SRectangle	enclosingRectangle	= 
 		{ {int(circle.Center.x - circle.Radius), int(circle.Center.y - circle.Radius)}
-		, {int(circle.Center.x + circle.Radius), int(circle.Center.y - circle.Radius)}
+		, {int(circle.Radius * 2), int(circle.Radius * 2)}
 		};
 
 	return rasterRectangle(enclosingRectangle, [circle, funcSetPixel] (const SCoord & cellCoord) {
