@@ -28,6 +28,7 @@ namespace rgb
 		rgb::SCoord							MousePosition	= {};	// Store in this variable the mouse position in window space.
 	};
 
-	int windowCreate(SWindow & window);
-	int windowUpdate(SWindow & window);
+	int			windowCreate	(::rgb::SWindow & window);
+	int			windowUpdate	(::rgb::SWindow & window);
+	int			windowPresent	(::rgb::SWindow & window, const uint32_t * pixels);
 }

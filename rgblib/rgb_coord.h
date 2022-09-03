@@ -28,6 +28,7 @@ namespace rgb
 		SCoord				Size;
 	};
 
-	int rasterRectangle (const SRectangle	& rectangle	, std::function<int(const SCoord &)> funcSetPixel);
-	int rasterCircle	(const SCircle		& circle	, std::function<int(const SCoord &)> funcSetPixel);
+	int rasterRectangle (const ::rgb::SRectangle	& rectangle	, const std::function<int(const ::rgb::SCoord &)> & funcSetPixel);
+	int rasterCircle	(const ::rgb::SCircle		& circle	, const std::function<int(const ::rgb::SCoord &)> & funcSetPixel);
+	int rasterSegment	(::rgb::SCoord A, ::rgb::SCoord B		, const std::function<int(const ::rgb::SCoord &)> & funcSetPixel);
 }

@@ -64,3 +64,38 @@ int rgb::windowUpdate(SWindow & window) {
 
 	return 0;
 }
+
+int rgb::windowPresent(::rgb::SWindow & window, const uint32_t * pixels) {
+	const HDC								renderContext		= GetDC(window.Handle);	// Retrieve a handle to the drawing subsystem of the window..
+	const HDC								compatibleContext	= CreateCompatibleDC(renderContext);	// Retrieve a handle to the drawing subsystem of the window..
+	if(compatibleContext) {
+		const uint32_t							windowArea			= window.Size.x * window.Size.y;
+
+		BITMAPINFO								bitmapInfo			= {sizeof(BITMAPINFO)};
+		bitmapInfo.bmiHeader.biWidth		= window.Size.x;
+		bitmapInfo.bmiHeader.biHeight		= window.Size.y;
+		bitmapInfo.bmiHeader.biBitCount		= 32;
+		bitmapInfo.bmiHeader.biPlanes		= 1;
+		bitmapInfo.bmiHeader.biCompression	= BI_RGB;
+		bitmapInfo.bmiHeader.biSizeImage	= windowArea * sizeof(uint32_t);
+
+		uint32_t								* dibBytes			= 0;
+		HBITMAP									dibSection			= CreateDIBSection(compatibleContext, &bitmapInfo, DIB_RGB_COLORS, (void**)&dibBytes, 0, 0);
+		if(dibSection) {
+			const uint32_t							rowSizeInBytes		= window.Size.x * sizeof(uint32_t);
+			for(uint32_t y = 0; y < (uint32_t)window.Size.y; ++y) {
+				const uint32_t							cellOffset			= y * window.Size.x;
+				memcpy(&dibBytes[window.Size.y * window.Size.x - window.Size.x - cellOffset], &pixels[cellOffset], rowSizeInBytes);
+			}
+			HGDIOBJ									oldObject			= SelectObject(compatibleContext, dibSection);
+			BitBlt(renderContext, 0, 0, window.Size.x, window.Size.y, compatibleContext, 0, 0, SRCCOPY);
+			SelectObject(compatibleContext, oldObject);
+			DeleteObject(dibSection);
+		}
+		DeleteDC(compatibleContext);
+	}
+
+	ReleaseDC(window.Handle, renderContext);	// Use this to tell the window. system we're not drawing anymore so it can draw its own window. elements such as the title bar, close/minimize/maximize buttons, etc. 
+	// As drawing on the window. needs to be done in order, this GetDC() and ReleaseDC() allow window.s to know it's your turn to draw and it prevents the window. system to draw on the window. area until you tell you're done drawing.
+	return 0;
+}
